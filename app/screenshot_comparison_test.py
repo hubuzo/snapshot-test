@@ -10,7 +10,6 @@ class ScreenshotComparisonTest:
         self.urls = urls
         self.options = Options()
         self.options.add_argument('--headless')
-        self.driver = webdriver.Chrome(options=self.options)
         self.screenshots_folder = self.get_screenshots_folder()
         self.found_diff = False
 
@@ -21,18 +20,12 @@ class ScreenshotComparisonTest:
         return folder_path
 
     def capture_screenshot(self, url):
-        self.driver.get(url)
-        self.driver.execute_script("return document.body.scrollHeight")
-        body_height = self.driver.execute_script("return document.body.scrollHeight")
-        self.driver.set_window_size(1920, body_height)
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            for i in range(0, body_height, 1080):
-                executor.submit(self.capture_screenshot_part, url, i)
-
-    def capture_screenshot_part(self, url, i):
-        self.driver.execute_script("window.scrollTo(0, " + str(i) + ");")
-        file_path = os.path.join(self.screenshots_folder, url.replace('/', '_') + '_' + str(i) + '.png')
-        self.driver.save_screenshot(file_path)
+        driver = webdriver.Chrome(options=self.options)
+        driver.get(url)
+        body_height = driver.execute_script("return document.body.scrollHeight")
+        driver.set_window_size(1920, body_height)
+        file_path = os.path.join(self.screenshots_folder, url.replace('/', '_') + '.png')
+        driver.save_screenshot(file_path)
 
     def capture_screenshots(self):
         with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -65,6 +58,8 @@ class ScreenshotComparisonTest:
             for current_file in current_files:
                 current_file_path = os.path.join(current_folder, current_file)
                 previous_file_path = os.path.join(previous_folder, current_file)
+                if not os.path.exists(previous_file_path):
+                    continue
                 self.compare_images(current_file_path, previous_file_path, url)
         if not self.found_diff:
             print('All images are identical.')
