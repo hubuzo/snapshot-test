@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  selenium:
+    build: .
+    volumes:
+      - ./screenshots:/app/screenshots
+    environment:
+      - DISPLAY=docker.for.mac.localhost:0
+    depends_on:
+      - safari
+    ports:
+      - "4444:4444"
+  safari:
+    image: selenium/standalone-safari:latest
+    ports:
+      - "5900:5900"
