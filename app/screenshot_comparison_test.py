@@ -3,7 +3,9 @@ import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from PIL import Image, ImageChops
+import imagehash 
 import concurrent.futures
+import cv2
 
 class ScreenshotComparisonTest:
     def __init__(self, urls):
@@ -34,13 +36,17 @@ class ScreenshotComparisonTest:
                 executor.submit(self.capture_screenshot, url)
 
     def compare_images(self, current_image_path, previous_image_path, url):
-        current_image = Image.open(current_image_path)
-        previous_image = Image.open(previous_image_path)
-        diff = ImageChops.difference(current_image, previous_image)
-        if diff.getbbox() is not None:
+        current_image_hash = imagehash.average_hash(Image.open(current_image_path)) 
+        previous_image_hath = imagehash.average_hash(Image.open(previous_image_path)) 
+        current_image = cv2.imread(current_image_path,0)
+        previous_image = cv2.imread(previous_image_path,0)
+        if current_image.shape != previous_image.shape:
+            print(f'{url} is not same shape with previous image.')
+        elif current_image_hash != previous_image_hath:
             self.found_diff = True
-            diff_file = os.path.join(self.screenshots_folder, 'diff', url + '.png')
-            diff.save(diff_file)
+            diff_file =  cv2.absdiff(current_image, previous_image)
+            diff_file_name = os.path.join(self.screenshots_folder, 'diff', url.replace('/', '_') + '.png')
+            cv2.imwrite(diff_file_name, diff_file)
             print(f'{url} has changed.')
 
     def compare_screenshots(self):
@@ -59,6 +65,7 @@ class ScreenshotComparisonTest:
                 current_file_path = os.path.join(current_folder, current_file)
                 previous_file_path = os.path.join(previous_folder, current_file)
                 if not os.path.exists(previous_file_path):
+                    print(f'{url} is not exists.')
                     continue
                 self.compare_images(current_file_path, previous_file_path, url)
         if not self.found_diff:
