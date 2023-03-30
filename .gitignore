@@ -1,3 +1,7 @@
 screenshots/*
 */__pycache__/
 .DS_Store
+
+new/*
+old/*
+diff/*

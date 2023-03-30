@@ -1,4 +1,4 @@
-from app.screenshot_comparison_test import ScreenshotComparisonTest 
+from app.ScreenshotComparisonTest import ScreenshotComparisonTest 
 
 # URLリストを定義する
 urls = [
