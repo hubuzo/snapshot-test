@@ -1,0 +1,10 @@
+version: "3"
+services:
+  imagecomparator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./old:/app/old
+      - ./new:/app/new
+      - ./diff:/app/diff
