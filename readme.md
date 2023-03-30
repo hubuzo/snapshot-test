@@ -1,3 +1,9 @@
 デザイン改修したときに差分検出用にスクリーンショットテストを作成した。
 
+ImageComparator
+
+docker-compose up
+
+
+
 ScreenshotComparison.pyはdockerでは動かないのでローカルにchromedriverを入れて動かす
