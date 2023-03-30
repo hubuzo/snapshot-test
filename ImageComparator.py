@@ -4,6 +4,12 @@ import cv2
 import imagehash
 from datetime import datetime
 
+"""
+同一階層にoldフォルダ, newフォルダを作成する
+その２つのフォルダを参照して同一のファイル名を取得し、差分を検証する
+差分検出結果はdiff配下に実行時間のフォルダを作成して保存する。
+OpenCVなので画像のサイズが同一の場合のみ検証できる。
+"""
 class ImageComparator:
     def __init__(self, old_dir, new_dir, diff_dir):
         self.old_dir = old_dir
